@@ -1,0 +1,213 @@
+
+<mat-expansion-panel>
+    <mat-expansion-panel-header>
+        <mat-panel-title> {{name.value??name.value || "Add Details"}} </mat-panel-title>
+        <mat-panel-description>
+        	Qty.{{bookQuantity.value}}
+        </mat-panel-description>
+		<mat-panel-description>
+        	{{itemQuotation.total}}
+        </mat-panel-description>
+    </mat-expansion-panel-header>
+
+	<mat-form-field>
+		<mat-label>Party name</mat-label>
+		<mat-select [(value)]="selectedParty">
+			@for (pname of party; track pname) {
+				<mat-option value="{{pname}}">{{pname}}</mat-option>
+			}
+		</mat-select>
+	</mat-form-field>
+
+	<br>
+
+	<mat-form-field>
+		<mat-label>Choose a date</mat-label>
+		<input matInput [matDatepicker]="picker">
+		<mat-hint>MM/DD/YYYY</mat-hint>
+		<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+		<mat-datepicker #picker></mat-datepicker>
+	</mat-form-field>
+
+	<br>
+
+	<mat-form-field>
+		<mat-label>Name</mat-label>
+		<input matInput
+			placeholder="Name"
+			[formControl]="name"
+		/>
+	</mat-form-field>
+
+	<br>
+
+	<mat-form-field>
+		<mat-label>Pap.Q</mat-label>
+		<input matInput
+			placeholder="0"
+			type="number"
+			[formControl]="paperQuantity"
+		/>
+	</mat-form-field>
+
+	<br>
+
+	<mat-form-field>
+		<mat-label>B.Qty.</mat-label>
+		<input matInput
+			placeholder="0"
+			type="number"
+			[formControl]="bookQuantity"
+		/>
+	</mat-form-field>
+
+	<br>
+
+	<mat-label>Card</mat-label>
+	<mat-checkbox [formControl]="card"></mat-checkbox>
+
+	<br>
+
+	<mat-form-field>
+		<mat-label>Size</mat-label>
+		<mat-select [(value)]="selectedSize">
+			@for (size of pSize; track size) {
+				<mat-option value="{{size}}">{{size}}</mat-option>
+			}
+		</mat-select>
+	</mat-form-field>
+
+	<br>
+
+	<mat-form-field>
+		<mat-label>Dp/Tr</mat-label>
+		<mat-select [(value)]="selectedDPTR">
+			@for (count of dptr; track count) {
+				<mat-option value="{{count}}">{{count}}</mat-option>
+			}
+		</mat-select>
+	</mat-form-field>
+
+	<br>
+
+	<mat-form-field>
+		<mat-label>Printed pages</mat-label>
+		<input matInput
+		placeholder="0"
+			type="number"
+			[formControl]="pritedPages"
+		/>
+	</mat-form-field>
+
+	<br>
+
+	<mat-form-field>
+		<mat-label>Pages</mat-label>
+		<input matInput
+		placeholder="0"
+			type="number"
+			[formControl]="pages"
+		/>
+	</mat-form-field>
+
+	<br>
+
+	<mat-form-field>
+		<mat-label>Front + back Col.</mat-label>
+		<input matInput
+		placeholder="0"
+			type="number"
+			[formControl]="fbcol"
+		/>
+	</mat-form-field>
+
+	<br>
+
+	<mat-label>Self Back</mat-label>
+	<mat-checkbox [formControl]="selfBack"></mat-checkbox>
+
+	<br>
+
+	<mat-form-field>
+		<mat-label>Plate</mat-label>
+		<mat-select [(value)]="selectedPlate">
+			@for (size of plateSize; track size) {
+				<mat-option value="{{size}}">{{size}}</mat-option>
+			}
+		</mat-select>
+	</mat-form-field>
+
+	<br>
+
+	<mat-form-field>
+		<mat-label>Bin</mat-label>
+		<mat-select [(value)]="selectedBin">
+			@for (size of bin; track size) {
+				<mat-option value="{{size}}">{{size}}</mat-option>
+			}
+		</mat-select>
+	</mat-form-field>
+
+	<br>
+
+	<mat-form-field>
+		<mat-label>Num Count</mat-label>
+		<input matInput
+		placeholder="0"
+			type="number"
+			[formControl]="numCou"
+		/>
+	</mat-form-field>
+
+	<br>
+
+	<mat-form-field>
+		<mat-label>Paper 1</mat-label>
+		<mat-select [(value)]="selectedPaper1">
+			@for (quality of paper; track quality) {
+				<mat-option value="{{quality}}">{{quality}}</mat-option>
+			}
+		</mat-select>
+	</mat-form-field>
+
+	@if (selectedDPTR >= 2) {
+		<br>
+
+		<mat-form-field>
+			<mat-label>Paper 2</mat-label>
+			<mat-select [(value)]="selectedPaper2">
+				@for (quality of paper; track quality) {
+					<mat-option value="{{quality}}">{{quality}}</mat-option>
+				}
+			</mat-select>
+		</mat-form-field>
+	}
+
+	@if (selectedDPTR >= 3) {
+		<br>
+
+		<mat-form-field>
+			<mat-label>Paper 3</mat-label>
+			<mat-select [(value)]="selectedPaper3">
+				@for (quality of paper; track quality) {
+					<mat-option value="{{quality}}">{{quality}}</mat-option>
+				}
+			</mat-select>
+		</mat-form-field>
+	}
+
+	@if (selectedDPTR >= 4) {
+		<br>
+
+		<mat-form-field>
+			<mat-label>Paper 4</mat-label>
+			<mat-select [(value)]="selectedPaper4">
+				@for (quality of paper; track quality) {
+					<mat-option value="{{quality}}">{{quality}}</mat-option>
+				}
+			</mat-select>
+		</mat-form-field>
+	}
+
+</mat-expansion-panel>
+

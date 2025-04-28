@@ -1,0 +1,64 @@
+<div class="table-wrapper">
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8" id="quotation-table">
+
+    <ng-container matColumnDef="jobName" [sticky]="true">
+        <th mat-header-cell *matHeaderCellDef> Job Name </th>
+        <td mat-cell *matCellDef="let element"> {{element.jobName}} </td>
+        <td mat-footer-cell *matFooterCellDef> Total </td>
+    </ng-container>
+
+    <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef> Date </th>
+        <td mat-cell *matCellDef="let element"> {{element.date}} </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+    </ng-container>
+
+    <ng-container matColumnDef="quantity">
+        <th mat-header-cell *matHeaderCellDef> Qty. </th>
+        <td mat-cell *matCellDef="let element"> {{element.quantity}} </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+    </ng-container>
+
+    <ng-container matColumnDef="print">
+        <th mat-header-cell *matHeaderCellDef> Print </th>
+        <td mat-cell *matCellDef="let element"> {{element.print}} </td>
+        <td mat-footer-cell *matFooterCellDef>{{totalCount.print}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="numbering">
+        <th mat-header-cell *matHeaderCellDef> Num. </th>
+        <td mat-cell *matCellDef="let element"> {{element.numbering}} </td>
+        <td mat-footer-cell *matFooterCellDef>{{totalCount.numbering}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="plate">
+        <th mat-header-cell *matHeaderCellDef> Plate </th>
+        <td mat-cell *matCellDef="let element"> {{element.plate}} </td>
+        <td mat-footer-cell *matFooterCellDef>{{totalCount.plate}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="bind">
+        <th mat-header-cell *matHeaderCellDef> Bind </th>
+        <td mat-cell *matCellDef="let element"> {{element.bind}} </td>
+        <td mat-footer-cell *matFooterCellDef>{{totalCount.bind}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="paper">
+        <th mat-header-cell *matHeaderCellDef> Paper </th>
+        <td mat-cell *matCellDef="let element"> {{element.paper}} </td>
+        <td mat-footer-cell *matFooterCellDef>{{totalCount.paper}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="total">
+        <th mat-header-cell *matHeaderCellDef> Total </th>
+        <td mat-cell *matCellDef="let element"> {{element.total}} </td>
+        <td mat-footer-cell *matFooterCellDef>{{totalCount.total}}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
+</table>
+</div>
+
+<button class="dl-pdf-btn" (click)="downloadPDF()" tabindex="-1"> Download PDF </button>

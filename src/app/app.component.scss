@@ -1,0 +1,49 @@
+.total-cost {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 50px;
+    background-color: grey;
+    font-size: 28px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.content {
+    overflow-y: scroll;
+    padding-bottom: 50px;
+    padding-top: 36px;
+}
+
+h1 {
+    position: fixed;
+    background-color: white;
+    border-bottom: 2px;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+    border-style: solid;
+    width: 100%;
+    z-index: 100;
+}
+
+app-expansion-panel {
+    margin-bottom: 4px;
+}
+
+.panel-wrapper {
+    padding: 2px;
+}
+
+.add-panel-btn {
+    margin: 2px;
+    cursor: pointer;
+}
+
+.delete-panel-btn {
+    margin-top: 2px;
+    cursor: pointer;
+}

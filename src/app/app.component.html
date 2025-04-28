@@ -1,0 +1,22 @@
+<main class="main">
+  <h1>Bill Book</h1>
+  <div class="content">
+    @for (item of itemsArray; track item; let idx = $index) {
+      <div class="panel-wrapper">
+        <app-expansion-panel
+        (itemCalculationEvent)="setItem($event, idx)"></app-expansion-panel>
+        <button mat-fab class="delete-panel-btn" (click)="deletePanel()">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    }
+      <button mat-fab class="add-panel-btn" (click)="addPanel()">
+        <mat-icon>add</mat-icon>
+      </button>
+  </div>
+  <div class="total-cost" (click)="openQuotation()">
+    <span>Total Cost: {{totalCost}}</span>
+  </div>
+</main>
+
+<router-outlet />
