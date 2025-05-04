@@ -1,6 +1,6 @@
 [build]
   command = "npm run prebuild && npm run build"
-  publish = "dist/bill-book"
+  publish = "dist/bill-book/browser"
 
 [build.environment]
-  PUBLIC_API_KEY = "abc123"
+  SECRET_API_KEY = "abc123"
