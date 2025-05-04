@@ -15,34 +15,18 @@ export class TablePopupComponent {
   readonly dialogRef = inject(MatDialogRef<TablePopupComponent>);
   readonly data = inject<quotation[]>(MAT_DIALOG_DATA);
   public dataSource = this.data;
-  public totalCount: quotation = {
-    jobName: '',
-    date: '',
-    quantity: 0,
-    print: 0,
-    numbering: 0,
-    plate: 0,
-    bind: 0,
-    paper: 0,
-    total: 0
-  };
 
   constructor() {
     this.calculateTotal();
   }
 
   public calculateTotal() {
-    this.totalCount = {
-      jobName: "",
-      date: "",
-      quantity: 0,
-      print: this.data.reduce((sum, item) => sum + item.print, 0),
-      numbering: this.data.reduce((sum, item) => sum + item.numbering, 0),
-      plate: this.data.reduce((sum, item) => sum + item.plate, 0),
-      bind: this.data.reduce((sum, item) => sum + item.bind, 0),
-      paper: this.data.reduce((sum, item) => sum + item.paper, 0),
-      total: this.data.reduce((sum, item) => sum + item.total, 0)
-    };
+    let totalCost = 0;
+    this.data.forEach(item => {
+      totalCost += item.total;
+    });
+
+    return totalCost;
   }
 
   public downloadPDF() {

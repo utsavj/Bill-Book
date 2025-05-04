@@ -11,8 +11,8 @@ export const SIZE: string[] = [
 ]
 
 export const PLATE: string[] = [
-    'P',
-    'M'
+    'PS',
+    'Master'
 ]
 
 export const BIN: string[] = [
@@ -59,3 +59,5 @@ export const DPTR: number[] = [
     3,
     4
 ]
+
+export const NUMBERING: number = 20;
