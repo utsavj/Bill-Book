@@ -10,4 +10,5 @@ export const environment = {
 `;
 
 writeFileSync(targetPath, envConfigFile);
+console.log(process.env['SECRET_API_KEY']);
 console.log('✅ Environment variables written to environment.ts');
