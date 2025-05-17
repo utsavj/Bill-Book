@@ -5,8 +5,8 @@ const targetPath = './src/environments/environment.ts';
 const envConfigFile = `
 export const environment = {
   production: true,
-  publicApiKey: '${process.env['SECRET_API_KEY'] || ''}'
-  spreadsheetId: '${process.env['SPREADSHEET_ID'] || ''}',
+  publicApiKey: '${process.env['SECRET_API_KEY'] || ''}',
+  spreadsheetId: '${process.env['SPREADSHEET_ID'] || ''}'
 };
 `;
 
