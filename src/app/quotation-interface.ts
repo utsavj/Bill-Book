@@ -1,4 +1,5 @@
 export interface quotation {
+    GUID: string,
     name: string,
     quantity: number,
     size: number,

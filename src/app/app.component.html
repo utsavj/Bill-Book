@@ -1,15 +1,12 @@
 <main class="main">
   <h1>Bill Book</h1>
   <div class="content">
-    @for (item of itemsArray; track item; let idx = $index) {
+    <ng-container *ngFor="let item of itemsArray; index as idx; trackBy: trackByFn">
       <div class="panel-wrapper">
         <app-expansion-panel
         (itemCalculationEvent)="setItem($event, idx)"></app-expansion-panel>
-        <button mat-fab class="delete-panel-btn" (click)="deletePanel()">
-          <mat-icon>delete</mat-icon>
-        </button>
       </div>
-    }
+    </ng-container>
       <button mat-fab class="add-panel-btn" (click)="addPanel()">
         <mat-icon>add</mat-icon>
       </button>

@@ -6,9 +6,9 @@ const envConfigFile = `
 export const environment = {
   production: true,
   publicApiKey: '${process.env['SECRET_API_KEY'] || ''}'
+  spreadsheetId: '${process.env['SPREADSHEET_ID'] || ''}',
 };
 `;
 
 writeFileSync(targetPath, envConfigFile);
-console.log(process.env['SECRET_API_KEY']);
 console.log('✅ Environment variables written to environment.ts');

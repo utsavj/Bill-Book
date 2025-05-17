@@ -1,9 +1,9 @@
 
 <mat-expansion-panel>
     <mat-expansion-panel-header>
-        <mat-panel-title> {{name.value??name.value || "Add Details"}} </mat-panel-title>
+		<mat-panel-title> {{getPanelName()}} </mat-panel-title>
         <mat-panel-description>
-        	Qty.{{bookQuantity.value}}
+        	Qty.{{getBookQty()}}
         </mat-panel-description>
 		<mat-panel-description>
         	{{itemQuotation.total}}
@@ -11,15 +11,6 @@
     </mat-expansion-panel-header>
 
 	<form [formGroup]="orderForm">
-		<mat-form-field>
-			<mat-label>Choose a date</mat-label>
-			<input matInput [matDatepicker]="picker" formControlName="date">
-			<mat-hint>MM/DD/YYYY</mat-hint>
-			<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-			<mat-datepicker #picker></mat-datepicker>
-		</mat-form-field>
-
-		<br>
 
 		<mat-form-field>
 			<mat-label>Name</mat-label>
@@ -44,10 +35,10 @@
 
 		<mat-form-field>
 			<mat-label>Size</mat-label>
-			<mat-select [(value)]="selectedSize">
-				@for (size of pSize; track size) {
+			<mat-select (selectionChange)="calculateAndEmitItemQuotation()" [(value)]="selectedSize">
+				<ng-container *ngFor="let size of pSize">
 					<mat-option value="{{size}}">{{size}}</mat-option>
-				}
+				</ng-container>
 			</mat-select>
 		</mat-form-field>
 
@@ -55,10 +46,10 @@
 
 		<mat-form-field>
 			<mat-label>Dp/Tr</mat-label>
-			<mat-select [(value)]="selectedDPTR">
-				@for (count of dptr; track count) {
+			<mat-select (selectionChange)="calculateAndEmitItemQuotation()" [(value)]="selectedDPTR">
+				<ng-container *ngFor="let count of dptr">
 					<mat-option value="{{count}}">{{count}}</mat-option>
-				}
+				</ng-container>
 			</mat-select>
 		</mat-form-field>
 
@@ -110,10 +101,10 @@
 
 		<mat-form-field>
 			<mat-label>Plate</mat-label>
-			<mat-select [(value)]="selectedPlate">
-				@for (size of plateSize; track size) {
+			<mat-select (selectionChange)="calculateAndEmitItemQuotation()" [(value)]="selectedPlate">
+				<ng-container *ngFor="let size of plateSize">
 					<mat-option value="{{size}}">{{size}}</mat-option>
-				}
+				</ng-container>
 			</mat-select>
 		</mat-form-field>
 
@@ -121,10 +112,10 @@
 
 		<mat-form-field>
 			<mat-label>Bin</mat-label>
-			<mat-select [(value)]="selectedBin">
-				@for (size of bin; track size) {
+			<mat-select (selectionChange)="calculateAndEmitItemQuotation()" [(value)]="selectedBin">
+				<ng-container *ngFor="let size of bin">
 					<mat-option value="{{size}}">{{size}}</mat-option>
-				}
+				</ng-container>
 			</mat-select>
 		</mat-form-field>
 
@@ -143,10 +134,10 @@
 
 		<mat-form-field>
 			<mat-label>Paper 1</mat-label>
-			<mat-select [(value)]="selectedPaper1">
-				@for (quality of paper; track quality) {
+			<mat-select (selectionChange)="calculateAndEmitItemQuotation()" [(value)]="selectedPaper1">
+				<ng-container *ngFor="let quality of paper">
 					<mat-option value="{{quality}}">{{quality}}</mat-option>
-				}
+				</ng-container>
 			</mat-select>
 		</mat-form-field>
 
@@ -155,10 +146,10 @@
 
 			<mat-form-field>
 				<mat-label>Paper 2</mat-label>
-				<mat-select [(value)]="selectedPaper2">
-					@for (quality of paper; track quality) {
+				<mat-select (selectionChange)="calculateAndEmitItemQuotation()" [(value)]="selectedPaper2">
+					<ng-container *ngFor="let quality of paper">
 						<mat-option value="{{quality}}">{{quality}}</mat-option>
-					}
+					</ng-container>
 				</mat-select>
 			</mat-form-field>
 		}
@@ -168,10 +159,10 @@
 
 			<mat-form-field>
 				<mat-label>Paper 3</mat-label>
-				<mat-select [(value)]="selectedPaper3">
-					@for (quality of paper; track quality) {
+				<mat-select (selectionChange)="calculateAndEmitItemQuotation()" [(value)]="selectedPaper3">
+					<ng-container *ngFor="let quality of paper">
 						<mat-option value="{{quality}}">{{quality}}</mat-option>
-					}
+					</ng-container>
 				</mat-select>
 			</mat-form-field>
 		}
@@ -181,10 +172,10 @@
 
 			<mat-form-field>
 				<mat-label>Paper 4</mat-label>
-				<mat-select [(value)]="selectedPaper4">
-					@for (quality of paper; track quality) {
+				<mat-select (selectionChange)="calculateAndEmitItemQuotation()" [(value)]="selectedPaper4">
+					<ng-container *ngFor="let quality of paper">
 						<mat-option value="{{quality}}">{{quality}}</mat-option>
-					}
+					</ng-container>
 				</mat-select>
 			</mat-form-field>
 		}

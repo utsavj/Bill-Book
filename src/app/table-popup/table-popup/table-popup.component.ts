@@ -11,22 +11,14 @@ import { quotation } from '../../quotation-interface';
   styleUrl: './table-popup.component.scss'
 })
 export class TablePopupComponent {
-  displayedColumns: string[] = ['jobName', 'date', 'quantity', 'print', 'numbering', 'plate', 'bind', 'paper', 'total'];
+  displayedColumns: string[] = ['name', 'quantity', 'size', 'dptr', 'printedPages', 'pages', 'column', 'side', 'plate', 'bind', 'numCounter', 'paper1', 'paper2', 'paper3', 'paper4', 'perBook', 'total'];
   readonly dialogRef = inject(MatDialogRef<TablePopupComponent>);
-  readonly data = inject<quotation[]>(MAT_DIALOG_DATA);
-  public dataSource = this.data;
+  readonly data = inject<any>(MAT_DIALOG_DATA);
+  public totalCost = this.data.totalCost;
+  public itemsArray: quotation[] = this.data.itemsArray;
 
   constructor() {
-    this.calculateTotal();
-  }
 
-  public calculateTotal() {
-    let totalCost = 0;
-    this.data.forEach(item => {
-      totalCost += item.total;
-    });
-
-    return totalCost;
   }
 
   public downloadPDF() {

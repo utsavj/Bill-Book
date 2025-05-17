@@ -1,9 +1,9 @@
 <div class="table-wrapper">
-<table mat-table [dataSource]="dataSource" class="mat-elevation-z8" id="quotation-table">
+<table mat-table [dataSource]="itemsArray" class="mat-elevation-z8" id="quotation-table">
 
-    <ng-container matColumnDef="jobName" [sticky]="true">
+    <ng-container matColumnDef="name" [sticky]="true">
         <th mat-header-cell *matHeaderCellDef> Name </th>
-        <td mat-cell *matCellDef="let element"> {{element.jobName}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
         <td mat-footer-cell *matFooterCellDef> Total </td>
     </ng-container>
 
@@ -55,9 +55,9 @@
         <td mat-footer-cell *matFooterCellDef></td>
     </ng-container>
 
-    <ng-container matColumnDef="bin">
+    <ng-container matColumnDef="bind">
         <th mat-header-cell *matHeaderCellDef> Bin </th>
-        <td mat-cell *matCellDef="let element"> {{element.bin}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.bind}} </td>
         <td mat-footer-cell *matFooterCellDef></td>
     </ng-container>
 
@@ -75,32 +75,32 @@
 
     <ng-container matColumnDef="paper2">
         <th mat-header-cell *matHeaderCellDef> Paper 2 </th>
-        <td mat-cell *matCellDef="let element"> {{element.paper2}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.paper2 == undefined || element.paper2 == "" ? "-" : element.paper2}} </td>
         <td mat-footer-cell *matFooterCellDef></td>
     </ng-container>
 
     <ng-container matColumnDef="paper3">
         <th mat-header-cell *matHeaderCellDef> Paper 3 </th>
-        <td mat-cell *matCellDef="let element"> {{element.paper3}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.paper3 == undefined || element.paper3 == "" ? "-" : element.paper3}} </td>
         <td mat-footer-cell *matFooterCellDef></td>
     </ng-container>
 
     <ng-container matColumnDef="paper4">
         <th mat-header-cell *matHeaderCellDef> Paper 4 </th>
-        <td mat-cell *matCellDef="let element"> {{element.paper4}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.paper4 == undefined || element.paper4 == "" ? "-" : element.paper4}} </td>
         <td mat-footer-cell *matFooterCellDef></td>
     </ng-container>
 
     <ng-container matColumnDef="perBook">
         <th mat-header-cell *matHeaderCellDef> Per book </th>
-        <td mat-cell *matCellDef="let element"> {{element.perBook}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.perBook.toFixed(2)}} </td>
         <td mat-footer-cell *matFooterCellDef></td>
     </ng-container>
 
     <ng-container matColumnDef="total">
         <th mat-header-cell *matHeaderCellDef> Total </th>
         <td mat-cell *matCellDef="let element"> {{element.total}} </td>
-        <td mat-footer-cell *matFooterCellDef>{{calculateTotal}}</td>
+        <td mat-footer-cell *matFooterCellDef>{{totalCost}}</td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>

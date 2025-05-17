@@ -11,6 +11,8 @@ import { BIN, DPTR, NUMBERING, PAPER, PARTY, PLATE, SIZE } from '../../values';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { quotation } from '../../quotation-interface';
 import { GetValuesService } from '../../services/get-values.service';
+import { v4 as uuidv4 } from 'uuid';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-expansion-panel',
@@ -27,7 +29,8 @@ import { GetValuesService } from '../../services/get-values.service';
     ReactiveFormsModule,
     MatDatepickerModule,
     MatSelectModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    CommonModule
   ],
   templateUrl: './expansion-panel.component.html',
   styleUrl: './expansion-panel.component.scss'
@@ -75,6 +78,7 @@ export class ExpansionPanelComponent {
   public sizeData: any;
   public paperData: any;
   public itemQuotation: quotation = {
+    GUID: uuidv4(),
     name: "",
     quantity: 0,
     size: 0,
@@ -99,34 +103,26 @@ export class ExpansionPanelComponent {
   constructor(public sheetsService: GetValuesService) {
   }
 
-  ngOnInit(): void {
-    this.sheetsService.getSize().subscribe((response: any) => {
-      const rawData = response.values;
-      this.sizeData = this.parseSheetData(rawData);
+  ngAfterViewInit(): void {
+    this.sheetsService.sizeDataObservable.subscribe((data: any) => {
+      this.sizeData = data;
+    });
+    this.sheetsService.paperDataObservable.subscribe((data: any) => {
+      this.paperData = data;
     });
 
-    this.sheetsService.getPaper().subscribe((response: any) => {
-      const rawData = response.values;
-      this.paperData = this.parseSheetData(rawData);
-    });
-  }
-
-  public parseSheetData(sheetValues: string[][]): Record<string, string>[] {
-    if (!sheetValues || sheetValues.length < 2) return [];
-
-    const headers = sheetValues[0];
-    const rows = sheetValues.slice(1);
-
-    return rows.map(row => {
-      const rowObject: Record<string, string> = {};
-      headers.forEach((header, index) => {
-        rowObject[header] = row[index] || '';
+    this.orderForm.valueChanges
+      .subscribe(value => {
+        if (this.orderForm.dirty) {
+          this.calculateAndEmitItemQuotation();
+        }
       });
-      return rowObject;
-    });
+
+    this.itemCalculationEvent.emit(this.itemQuotation);
   }
 
   public calculateAndEmitItemQuotation() {
+    console.log("Yes");
     let itemTotal =
     this.calculatePrint() +
     this.calculateDe() +
@@ -134,6 +130,14 @@ export class ExpansionPanelComponent {
     this.calculateBind() +
     this.calculatePaper() +
     this.calculateNumberRs();
+    console.log(itemTotal);
+
+    console.log("Print: " + this.calculatePrint());
+    console.log("De: " + this.calculateDe());
+    console.log("Plate: " + this.calculatePlate());
+    console.log("Bind: " + this.calculateBind());
+    console.log("Paper: " + this.calculatePaper());
+    console.log("Number Rs: " + this.calculateNumberRs());
     this.generateItemQuotationAndEmit(itemTotal);
   }
 
@@ -172,9 +176,9 @@ export class ExpansionPanelComponent {
   public calculatePlate() {
     switch(this.selectedPlate) {
       case "PS":
-        return Number(this.side) * Number(this.fbcol) * 80;
+        return Number(this.side.value) * Number(this.fbcol.value) * 80;
       case "Master":
-        return Number(this.side) * Number(this.fbcol) * 30;
+        return Number(this.side.value) * Number(this.fbcol.value) * 30;
       default:
         return 0;
     }
@@ -188,12 +192,12 @@ export class ExpansionPanelComponent {
     } else if (this.selectedBin === "Paku") {
 
       this.sizeData.forEach((item: any) => {
-        result = Number(item.Size) == Number(this.selectedSize) ? Number(item.Paku) * Number(this.bookQuantity.value) : 0;
+        result = Number(item.Size) == Number(this.selectedSize) ? Number(item.Paku) * Number(this.bookQuantity.value) : result;
       });
 
     } else if (this.selectedBin === "GumPad") {
       this.sizeData.forEach((item: any) => {
-        result = Number(item.Size) == Number(this.selectedSize) ? Number(item.GumPad) * Number(this.bookQuantity.value) : 0;
+        result = Number(item.Size) == Number(this.selectedSize) ? Number(item.GumPad) * Number(this.bookQuantity.value) : result;
       });
     }
 
@@ -201,6 +205,11 @@ export class ExpansionPanelComponent {
   }
 
   public calculatePaper(): number {
+    console.log("Paper1: " + this.calculatePaper1());
+    console.log("Paper2: " + this.calculatePaper2());
+    console.log("Paper3: " + this.calculatePaper3());
+    console.log("Paper4: " + this.calculatePaper4());
+    console.log("Total Paper: " + this.calculatePaper1() + this.calculatePaper2() + this.calculatePaper3() + this.calculatePaper4());
     return this.calculatePaper1() + this.calculatePaper2() + this.calculatePaper3() + this.calculatePaper4();
   }
 
@@ -208,49 +217,49 @@ export class ExpansionPanelComponent {
     let result: number = 0;
 
     // Convert relevant variables to numbers if they aren't already
-    const pagesNumber = Number(this.pages);
-    const bookQuantityNumber = Number(this.bookQuantity);
+    const pagesNumber = Number(this.pages.value);
+    const bookQuantityNumber = Number(this.bookQuantity.value);
     const selectedSizeNumber = Number(this.selectedSize);
 
     if (this.selectedPaper1 === "18.6 Kg.") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : result;
       });
     } else if (this.selectedPaper1 === "7.4 White") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : result;
       });
     } else if (this.selectedPaper1 === "Colour") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : result;
       });
     } else if (this.selectedPaper1 === "Chalu") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : result;
       });
     } else if (this.selectedPaper1 === "A4") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / 500) * item.Rate : result;
       });
     } else if (this.selectedPaper1 === "FS") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / 500) * item.Rate : result;
       });
     } else if (this.selectedPaper1 === "Ex. Bond") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : result;
       });
     } else if (this.selectedPaper1 === "Alabaster") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : result;
       });
     } else if (this.selectedPaper1 === "S.S.") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : result;
       });
     } else if (this.selectedPaper1 === "Carbonless") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : result;
       });
     } else {
         result = 0;
@@ -262,50 +271,53 @@ export class ExpansionPanelComponent {
   public calculatePaper2(): number {
     let result: number = 0;
 
+    if (this.selectedDPTR < 2)
+      return result;
+
     // Convert relevant variables to numbers if they aren't already
-    const pagesNumber = Number(this.pages);
-    const bookQuantityNumber = Number(this.bookQuantity);
+    const pagesNumber = Number(this.pages.value);
+    const bookQuantityNumber = Number(this.bookQuantity.value);
     const selectedSizeNumber = Number(this.selectedSize);
 
-    if (this.selectedPaper1 === "18.6 Kg.") {
+    if (this.selectedPaper2 === "18.6 Kg.") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper2 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "7.4 White") {
+    } else if (this.selectedPaper2 === "7.4 White") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper2 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "Colour") {
+    } else if (this.selectedPaper2 === "Colour") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper2 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "Chalu") {
+    } else if (this.selectedPaper2 === "Chalu") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper2 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "A4") {
+    } else if (this.selectedPaper2 === "A4") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper2 ? ((pagesNumber * bookQuantityNumber) / 500) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "FS") {
+    } else if (this.selectedPaper2 === "FS") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper2 ? ((pagesNumber * bookQuantityNumber) / 500) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "Ex. Bond") {
+    } else if (this.selectedPaper2 === "Ex. Bond") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper2 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "Alabaster") {
+    } else if (this.selectedPaper2 === "Alabaster") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper2 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "S.S.") {
+    } else if (this.selectedPaper2 === "S.S.") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper2 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "Carbonless") {
+    } else if (this.selectedPaper2 === "Carbonless") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper2 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : result;
       });
     } else {
         result = 0;
@@ -317,50 +329,53 @@ export class ExpansionPanelComponent {
   public calculatePaper3(): number {
     let result: number = 0;
 
+    if (this.selectedDPTR < 3)
+      return result;
+
     // Convert relevant variables to numbers if they aren't already
-    const pagesNumber = Number(this.pages);
-    const bookQuantityNumber = Number(this.bookQuantity);
+    const pagesNumber = Number(this.pages.value);
+    const bookQuantityNumber = Number(this.bookQuantity.value);
     const selectedSizeNumber = Number(this.selectedSize);
 
-    if (this.selectedPaper1 === "18.6 Kg.") {
+    if (this.selectedPaper3 === "18.6 Kg.") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper3 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "7.4 White") {
+    } else if (this.selectedPaper3 === "7.4 White") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper3 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "Colour") {
+    } else if (this.selectedPaper3 === "Colour") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper3 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "Chalu") {
+    } else if (this.selectedPaper3 === "Chalu") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper3 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "A4") {
+    } else if (this.selectedPaper3 === "A4") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper3 ? ((pagesNumber * bookQuantityNumber) / 500) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "FS") {
+    } else if (this.selectedPaper3 === "FS") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper3 ? ((pagesNumber * bookQuantityNumber) / 500) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "Ex. Bond") {
+    } else if (this.selectedPaper3 === "Ex. Bond") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper3 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "Alabaster") {
+    } else if (this.selectedPaper3 === "Alabaster") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper3 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "S.S.") {
+    } else if (this.selectedPaper3 === "S.S.") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper3 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "Carbonless") {
+    } else if (this.selectedPaper3 === "Carbonless") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper3 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : result;
       });
     } else {
         result = 0;
@@ -372,50 +387,53 @@ export class ExpansionPanelComponent {
   public calculatePaper4(): number {
     let result: number = 0;
 
+    if (this.selectedDPTR < 4)
+      return result;
+
     // Convert relevant variables to numbers if they aren't already
-    const pagesNumber = Number(this.pages);
-    const bookQuantityNumber = Number(this.bookQuantity);
+    const pagesNumber = Number(this.pages.value);
+    const bookQuantityNumber = Number(this.bookQuantity.value);
     const selectedSizeNumber = Number(this.selectedSize);
 
-    if (this.selectedPaper1 === "18.6 Kg.") {
+    if (this.selectedPaper4 === "18.6 Kg.") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper4 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "7.4 White") {
+    } else if (this.selectedPaper4 === "7.4 White") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper4 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "Colour") {
+    } else if (this.selectedPaper4 === "Colour") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper4 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "Chalu") {
+    } else if (this.selectedPaper4 === "Chalu") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper4 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 480) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "A4") {
+    } else if (this.selectedPaper4 === "A4") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper4 ? ((pagesNumber * bookQuantityNumber) / 500) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "FS") {
+    } else if (this.selectedPaper4 === "FS") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper4 ? ((pagesNumber * bookQuantityNumber) / 500) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "Ex. Bond") {
+    } else if (this.selectedPaper4 === "Ex. Bond") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper4 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "Alabaster") {
+    } else if (this.selectedPaper4 === "Alabaster") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper4 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "S.S.") {
+    } else if (this.selectedPaper4 === "S.S.") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper4 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : result;
       });
-    } else if (this.selectedPaper1 === "Carbonless") {
+    } else if (this.selectedPaper4 === "Carbonless") {
       this.paperData.forEach((item: any) => {
-        result = item.PaperQuality == this.selectedPaper1 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : 0;
+        result = item.PaperQuality == this.selectedPaper4 ? ((pagesNumber * bookQuantityNumber) / selectedSizeNumber / 500) * item.Rate : result;
       });
     } else {
         result = 0;
@@ -441,7 +459,7 @@ export class ExpansionPanelComponent {
     this.itemQuotation.paper3 = this.selectedPaper3;
     this.itemQuotation.paper4 = this.selectedPaper4;
     this.itemQuotation.total = this.calculateTotalAmt(itemTotal);
-    this.itemQuotation.perBook = itemTotal/this.itemQuotation.quantity;
+    this.itemQuotation.perBook = this.itemQuotation.total/this.itemQuotation.quantity;
     this.itemCalculationEvent.emit(this.itemQuotation)
   }
 
@@ -453,6 +471,14 @@ export class ExpansionPanelComponent {
           ? itemTotal + (itemTotal * 30) / 100
           : itemTotal + (itemTotal * 40) / 100
     );
+  }
+
+  public getPanelName(): string {
+    return this.name.value && this.name.value !== "" ? this.name.value : "Add Details";
+  }
+
+  public getBookQty(): number {
+    return this.bookQuantity.value ? Number(this.bookQuantity.value) : 0;
   }
 
 }

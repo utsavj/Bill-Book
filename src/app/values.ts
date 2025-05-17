@@ -16,9 +16,9 @@ export const PLATE: string[] = [
 ]
 
 export const BIN: string[] = [
-    'P',
-    'G',
-    'Tejas'
+    'Paku',
+    'GumPad',
+    'None'
 ]
 
 export const PAPER: string[] = [
