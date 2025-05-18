@@ -72,7 +72,6 @@ export class AppComponent {
   }
 
   public setItem(item: quotation, index: number) {
-    console.log(index);
     this.itemsArray[index] = item;
     this.calculateBillAmount();
   }
